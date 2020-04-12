@@ -10,6 +10,11 @@ class Play extends Phaser.Scene {
         this.load.image('starfield','./assets/starfield.png');
         //load spritesheet (explosion animation)
         this.load.spritesheet('explosion','./assets/explosion.png',{frameWidth:64,frameHeight:32,startFrame:0,endFrame:9});
+        //load audio
+        this.load.audio('sfx_select','./assets/blip_select12.wav');
+        this.load.audio('sfx_explosion','./assets/explosion38.wav');
+        this.load.audio('sfx_rocket','./assets/rocket_shot.wav');
+
     }
 
     create(){
@@ -62,14 +67,32 @@ class Play extends Phaser.Scene {
         }
         this.scoreLeft = this.add.text(69,54,this.p1Score,scoreConfig);
 
+        //game over flag
+        this.gameOver = false;
+
+        //timer
+        scoreConfig.fixedWidth = 0;
+        this.clock = this.time.delayedCall(60000, () => {
+            this.gameOver = true;
+            this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0,5);
+            this.add.text(game.config.width/2, game.config.height/2 + 64, '(F)ire to Restart', scoreConfig).setOrigin(0,5);
+        }, null, this);
+
     }
 
     update(){
+        if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyF)){
+            this.scene.restart(this.p1Score);
+        }
+
         this.starfield.tilePositionX -= 4;
-        this.p1Rocket.update();
-        this.ship01.update();
-        this.ship02.update();
-        this.ship03.update();
+        if (!this.gameOver){
+            this.p1Rocket.update();
+            this.ship01.update();
+            this.ship02.update();
+            this.ship03.update();
+        }
+        
         if(this.checkCollision(this.p1Rocket,this.ship03)){
             this.p1Rocket.reset();
             this.shipExplode(this.ship03);
@@ -103,5 +126,6 @@ class Play extends Phaser.Scene {
         })
         this.p1Score += ship.points;
         this.scoreLeft.text = this.p1Score;
+        this.sound.play('sfx_explosion');
     }
 }
