@@ -45,6 +45,23 @@ class Play extends Phaser.Scene {
             frameRate: 30
         });
 
+        //score
+        this.p1Score = 0;
+        //score display
+        let scoreConfig = {
+            fontFamily: 'Courier',
+            fontSize: '28px',
+            backgroundColor: '#F3B141',
+            color: '#843605',
+            align: 'right',
+            padding: {
+                top: 5,
+                bottom: 5,
+            },
+            fixedWidth: 100
+        }
+        this.scoreLeft = this.add.text(69,54,this.p1Score,scoreConfig);
+
     }
 
     update(){
@@ -59,7 +76,7 @@ class Play extends Phaser.Scene {
         }
         if(this.checkCollision(this.p1Rocket,this.ship02)){
             this.p1Rocket.reset();
-            this.shipExplode(this.ship01);
+            this.shipExplode(this.ship02);
         }
         if(this.checkCollision(this.p1Rocket,this.ship01)){
             this.p1Rocket.reset();
@@ -84,5 +101,7 @@ class Play extends Phaser.Scene {
             ship.alpha = 1;
             boom.destroy();
         })
+        this.p1Score += ship.points;
+        this.scoreLeft.text = this.p1Score;
     }
 }
