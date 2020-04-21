@@ -84,7 +84,7 @@ class Play extends Phaser.Scene {
             this.gameOver = true;
             this.add.text(game.config.width/2, game.config.height/2 - 64, 'GAME OVER', HUDConfig).setOrigin(0.5);
             this.add.text(game.config.width/2, game.config.height/2, '(F)ire to Restart or ⬅ for Menu', HUDConfig).setOrigin(0.5);
-            //highscore
+            //new highscore display
             if (game.settings.difficulty == 0){
                 //easy
                 if (this.p1Score > game.highscore.easy){
@@ -113,13 +113,12 @@ class Play extends Phaser.Scene {
             this.hsDisplay = this.add.text(350,54,'HS: '+game.highscore.hard,HUDConfig);
         }
         
-
-        //clock display
+        //timer display
         this.timeDisplay = this.add.text(550,54,this.timeleft,HUDConfig);
     }
 
     update(){
-        //clock display update
+        //timer display update
         this.timeDisplay.text = (game.settings.gameTimer/1000) - Math.floor(this.clock.getElapsedSeconds());
 
         //gameover
@@ -130,7 +129,7 @@ class Play extends Phaser.Scene {
             this.scene.start("menuScene");
         }
         
-        //panic
+        //speed up at 20 seconds left, named panic
         if (this.timeDisplay.text > 19 && this.timeDisplay.text <= 20){
             this.ship01.panic();
             this.fship01.panic();
@@ -149,6 +148,7 @@ class Play extends Phaser.Scene {
         else 
             this.fireDisplay.text = "";
 
+        //movement
         if (!this.gameOver){
             //player movement
             this.p1Rocket.update();
@@ -181,7 +181,7 @@ class Play extends Phaser.Scene {
             this.shipExplode(ship);
             
 
-            //75% chance to change ship type on explosion
+            //change ship type on explosion (75% chance)
             return (Math.random()<0.75);
         }
     }
@@ -206,7 +206,9 @@ class Play extends Phaser.Scene {
         })
         this.p1Score += ship.points;
         this.scoreLeft.text = this.p1Score;
+        //add time on hit
         this.clock.time -= 100*ship.points;
+        //randomize ship speed
         ship.randomspeed();
         this.sound.play('sfx_explosion');
     }

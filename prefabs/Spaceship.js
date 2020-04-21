@@ -19,12 +19,14 @@ class Spaceship extends Phaser.GameObjects.Sprite {
             this.reset();
     }
 
+    //speed up at 20 seconds remaining
     panic(){
         if (this.panicspeed == 1){
             this.panicspeed = 2.0;
         }
     }
 
+    //randomizes ship speed
     randomspeed(){
         this.speedmod = (Math.random()-0.5)*2;
     }

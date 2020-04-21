@@ -35,6 +35,8 @@ class Menu extends Phaser.Scene {
         menuConfig.backgroundColor = '#00FF00';
         menuConfig.color = '#001F00';
         this.add.text(centerX,centerY+textSpacer,'Press ⬅ for Easy or ➞ for Hard',menuConfig).setOrigin(0.5);
+
+        //high score display
         menuConfig.backgroundColor = '#FACADE';
         menuConfig.color = '#645058';
         this.add.text(centerX,centerY+textSpacer*2,'Highscores: Easy ' + game.highscore.easy + ' Hard ' + game.highscore.hard,menuConfig).setOrigin(0.5);
@@ -49,7 +51,7 @@ class Menu extends Phaser.Scene {
             //easy
             game.settings = {
                 spaceshipSpeed: 3,
-                gameTimer: 6000,
+                gameTimer: 60000,
                 difficulty: 0
             }
             this.sound.play('sfx_select');
@@ -59,7 +61,7 @@ class Menu extends Phaser.Scene {
             //hard
             game.settings = {
                 spaceshipSpeed: 4,
-                gameTimer: 25000,
+                gameTimer: 45000,
                 difficulty: 1
             }
             this.sound.play('sfx_select');
