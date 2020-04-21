@@ -9,7 +9,13 @@ let game = new Phaser.Game(config);
 
 game.settings = {
     spaceshipSpeed: 3,
-    gameTimer: 60000
+    gameTimer: 60000,
+    difficulty: 0
+}
+
+game.highscore = {
+    easy: 0,
+    hard: 0
 }
 
 //reserve keyboard vars

@@ -3,22 +3,23 @@ class Spaceship extends Phaser.GameObjects.Sprite {
         super(scene,x,y,texture,frame);
 
         scene.add.existing(this); //add object to existing scene
-        this.speed = 0;
-
-        if (fasttype){
-            this.speed = 5;
-        }
-        else {
-            this.speed = 3;
-        }
+        this.speed = game.settings.spaceshipSpeed;
+        this.speedmod = (Math.random()-0.5)*1.3;
+        this.points = pointValue;
+        if (fasttype)
+            this.speed *= 1.5;
     }
 
     update(){
         //move spaceship left
-        this.x -= this.speed;
+        this.x -= (game.settings.spaceshipSpeed + this.speedmod);
         //wraparound from left to right edge
-        if (this.x <= 0-this.width)
+        if (this.x <= 0 - this.width)
             this.reset();
+    }
+
+    randomspeed(){
+        this.speedmod = (Math.random()-0.5)*2;
     }
 
     reset(){

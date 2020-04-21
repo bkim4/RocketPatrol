@@ -56,10 +56,8 @@ class Play extends Phaser.Scene {
             frameRate: 30
         });
 
-        //score
-        this.p1Score = 0;
-        //score display
-        let scoreConfig = {
+        //HUD
+        let HUDConfig = {
             fontFamily: 'Courier',
             fontSize: '28px',
             backgroundColor: '#F3B141',
@@ -71,22 +69,60 @@ class Play extends Phaser.Scene {
             },
             fixedWidth: 100
         }
-        this.scoreLeft = this.add.text(69,54,this.p1Score,scoreConfig);
+
+        //score
+        this.p1Score = 0;
+        //score display
+        this.scoreLeft = this.add.text(69,54,this.p1Score,HUDConfig);
 
         //game over flag
         this.gameOver = false;
 
         //timer
-        scoreConfig.fixedWidth = 0;
+        HUDConfig.fixedWidth = 0;
         this.clock = this.time.delayedCall(game.settings.gameTimer, () => {
             this.gameOver = true;
-            this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0.5);
-            this.add.text(game.config.width/2, game.config.height/2 + 64, '(F)ire to Restart or ⬅ for Menu', scoreConfig).setOrigin(0.5);
+            this.add.text(game.config.width/2, game.config.height/2 - 64, 'GAME OVER', HUDConfig).setOrigin(0.5);
+            this.add.text(game.config.width/2, game.config.height/2, '(F)ire to Restart or ⬅ for Menu', HUDConfig).setOrigin(0.5);
+            //highscore
+            if (game.settings.difficulty == 0){
+                //easy
+                if (this.p1Score > game.highscore.easy){
+                    this.add.text(game.config.width/2, game.config.height/2 + 64, 'High score! ' + this.p1Score + ' pts', HUDConfig).setOrigin(0.5);
+                    game.highscore.easy = this.p1Score;
+                }
+            }
+            else if (game.settings.difficulty == 1){
+                //hard
+                if (this.p1Score > game.highscore.hard){
+                    this.add.text(game.config.width/2, game.config.height/2 + 64, 'High score! ' + this.p1Score + ' pts', HUDConfig).setOrigin(0.5);
+                    game.highscore.hard = this.p1Score;
+                }
+            }
+            
         }, null, this);
 
+        //fire display
+        this.fireDisplay = this.add.text(200,54,'',HUDConfig);
+
+        //highscore display
+        if (game.settings.difficulty == 0){
+            this.hsDisplay = this.add.text(350,54,'HS: '+game.highscore.easy,HUDConfig);
+        }
+        else if (game.settings.difficulty == 1){
+            this.hsDisplay = this.add.text(350,54,'HS: '+game.highscore.hard,HUDConfig);
+        }
+        
+
+        //clock display
+        this.timeDisplay = this.add.text(550,54,this.timeleft,HUDConfig);
     }
 
     update(){
+        //clock display update
+        this.timeDisplay.text = (game.settings.gameTimer/1000) - Math.floor(this.clock.getElapsedSeconds());
+
+        //gameover
         if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyF)){
             this.scene.restart(this.p1Score);
         }
@@ -94,9 +130,19 @@ class Play extends Phaser.Scene {
             this.scene.start("menuScene");
         }
 
+        //scrolling background
         this.starfield.tilePositionX -= 4;
+
+        //fire display
+        if (this.p1Rocket.isFiring)
+            this.fireDisplay.text = "FIRE";
+        else 
+            this.fireDisplay.text = "";
+
         if (!this.gameOver){
+            //player movement
             this.p1Rocket.update();
+            //spaceship movement
             if (this.shiptype01)
                 this.fship01.update();
             else
@@ -110,7 +156,7 @@ class Play extends Phaser.Scene {
             else
                 this.ship03.update();
         }
-
+        //collision
         if (this.processCollision(this.p1Rocket,this.ship03)) this.shiptype03 = !this.shiptype03;
         if (this.processCollision(this.p1Rocket,this.fship03)) this.shiptype03 = !this.shiptype03;
         if (this.processCollision(this.p1Rocket,this.ship02)) this.shiptype02 = !this.shiptype02;
@@ -123,6 +169,7 @@ class Play extends Phaser.Scene {
         if(this.checkCollision(rocket,ship)){
             rocket.reset();
             this.shipExplode(ship);
+            
 
             //75% chance to change ship type on explosion
             return (Math.random()<0.75);
@@ -149,6 +196,8 @@ class Play extends Phaser.Scene {
         })
         this.p1Score += ship.points;
         this.scoreLeft.text = this.p1Score;
+        this.clock.time -= 100*ship.points;
+        ship.randomspeed();
         this.sound.play('sfx_explosion');
     }
 }
