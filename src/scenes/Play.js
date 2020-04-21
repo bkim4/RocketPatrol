@@ -129,6 +129,16 @@ class Play extends Phaser.Scene {
         if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)){
             this.scene.start("menuScene");
         }
+        
+        //panic
+        if (this.timeDisplay.text > 19 && this.timeDisplay.text <= 20){
+            this.ship01.panic();
+            this.fship01.panic();
+            this.ship02.panic();
+            this.fship02.panic();
+            this.ship03.panic();
+            this.fship03.panic();
+        }
 
         //scrolling background
         this.starfield.tilePositionX -= 4;
